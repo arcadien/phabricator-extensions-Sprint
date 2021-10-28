@@ -98,20 +98,27 @@ abstract class SprintProjectController extends SprintController {
   }
 
   protected function getProfileMenu() {
+
+
     if (!$this->profileMenu) {
       $project = $this->getProject();
       if ($project) {
         $viewer = $this->getViewer();
 
         $engine = id(new SprintProjectProfilePanelEngine())
-            ->setViewer($viewer)
-            ->setProfileObject($project);
-
-        $this->profileMenu = $engine->buildNavigation();
+        ->setViewer($viewer)
+        ->setController($this)
+        ->setProfileObject($project)
+        ->setController($this);
+        
+        $view_list = $engine->newProfileMenuItemViewList();
+        $this->profileMenu = $view_list->newNavigationView();
+        
       }
     }
 
     return $this->profileMenu;
+
   }
 
   public function buildSideNavView($for_app = false) {
@@ -140,9 +147,7 @@ abstract class SprintProjectController extends SprintController {
           ->setViewer($viewer)
           ->addNavigationItems($nav->getMenu());
     }
-
     $nav->selectFilter(null);
-
     return $nav;
   }
 
